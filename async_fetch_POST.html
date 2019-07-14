@@ -1,0 +1,53 @@
+<!doctype html>
+<html>
+  <head>
+    <title>AJAX / Fetch / etc.</title>
+
+    <style>
+     body {
+        text-align: center;
+      }
+
+    </style>
+  <body>
+	<label for="ze">Vorname</label>
+	<input type="text" placeholder="Vorname" id="ze" > 
+	<label for="zw">Nachname</label>
+	<input type="text" placeholder="Nachname" id="zw" > 
+
+	
+	<button class="btn" onclick="fetchRequest()">Fetch request</button>
+	
+    <main></main>
+
+    <script>
+      function message(msg) {
+        let m = document.querySelector("main");
+        let h = document.createElement("p");
+        h.innerHTML = msg;
+        m.appendChild(h);
+      }
+
+      function fetchRequest() {
+		var erste = document.getElementById("ze").value;
+		var zweite = document.getElementById("zw").value;
+        let reqObj = { method: "request", a: erste , b: zweite };
+
+        fetch("async_fetch_POST_PHPworker.php",
+              { method: "POST", body: JSON.stringify(reqObj) }
+        ).then( (response) => {
+          if (response.ok) {
+            let contentType = response.headers.get("content-type");
+            if (contentType && contentType.indexOf("application/json") !== -1) {
+              return response.json();
+            }
+          }
+          throw new Error("Error in response!");
+        }).then( (result) => {
+           let resultMsg = "Request successful! Result: " + result.result + " - Info: " + result.info;
+            message(resultMsg);
+        }).catch( (error) => { alert("An error occured! " + error); });
+      }
+    </script>
+  </body>
+</html>

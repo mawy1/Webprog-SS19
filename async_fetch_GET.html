@@ -1,0 +1,50 @@
+<!doctype html>
+<html>
+  <head>
+    <title>AJAX / Fetch / etc.</title>
+
+    <style>
+     body {
+        text-align: center;
+      }
+
+    </style>
+
+  </head>
+  <body>
+	<form onsubmit ="sendReq(); return false;">
+		<label for="ze">Vorname</label>
+		<input type="text" placeholder="Vorname" id="ze" > 
+		<label for="zw">Nachname</label>
+		<input type="text" placeholder="Nachname" id="zw" > 
+
+		
+		<input type ="submit" value="Absenden">
+	</form>
+	<p id ="Result">abbaaa</p>
+
+    <script>
+	function sendReq(){
+		let name = document.getElementById("ze").value;
+		let vname = document.getElementById("zw").value;
+		let url = "async_fetch_GET_PHPworker.php?action=register&name="+name+"&vorname="+vname;
+		let resp = document.getElementById("Result");
+		
+		
+		fetch(url).then(function (response)
+		{
+		console.log(response);
+			if(response.ok)
+			{
+				resp.innerHTML ="Erfolg: " +response.status + " " + response.statusText;
+			}
+			else
+				resp.innerHTML="Fehlschlag";
+		})
+		.catch(function(err){
+			resp.innerHTML="Fehlschlag2";
+		});
+	}
+    </script>
+  </body>
+</html>

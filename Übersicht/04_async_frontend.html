@@ -1,0 +1,109 @@
+<!doctype html>
+<html>
+  <head>
+    <title>AJAX / Fetch / etc.</title>
+
+    <style>
+      * {
+        padding: 0;
+        margin: 0;
+      }
+
+      body {
+        text-align: center;
+      }
+
+      .btn {
+        background: #3498db;
+        background-image: linear-gradient(#3498db, #2980b9);
+        border-radius: 6px;
+        font-family: Arial;
+        color: #ffffff;
+        font-size: 24px;
+        padding: 25px 25px 25px 25px;
+        text-decoration: none;
+        width: 250px;
+      }
+
+      .btn:hover {
+        background: #3cb0fd;
+        background-image: linear-gradient(#3cb0fd, #3498db);
+        text-decoration: none;
+      }
+    </style>
+
+  </head>
+  <body onload="installCounter()">
+    <br><br>
+    <h3>This webpage is running for <span id="time">0.0</span> seconds</h3>
+    <br><br>
+    <button class="btn" onclick="classicRequest()">XMLHttpRequest</button>
+    <br><br>
+    <button class="btn" onclick="fetchRequest()">Fetch request</button>
+    <br><br>
+    <main></main>
+
+    <script>
+
+      function message(msg) {
+        let m = document.querySelector("main");
+        let h = document.createElement("p");
+        h.innerHTML = msg;
+        m.appendChild(h);
+      }
+
+      function classicRequest() {
+        let reqObj = { method: "add", a: 2, b: 40 };
+        let req = new XMLHttpRequest();
+        req.open("POST", "04_async_service.php", true);
+		req.send(JSON.stringify(reqObj));
+
+        req.onreadystatechange = () => {
+          if (req.readyState === 4) {
+            if (req.status === 200) {
+              let contentType = req.getResponseHeader("content-type");
+              if (contentType && contentType.indexOf("application/json") !== -1) {
+                let result = JSON.parse(req.response);
+                let resultMsg = "Request successful! Result: " + result.result + " - Info: " + result.info;
+                message(resultMsg);
+              }
+            } else {
+              alert("Error in request!");
+            }
+          }
+        }
+
+      }
+
+      function fetchRequest() {
+        let reqObj = { method: "add", a: 40, b: 2 };
+
+        fetch("04_async_service.php",
+              { method: "POST", body: JSON.stringify(reqObj) }
+        ).then( (response) => {
+          if (response.ok) {
+            let contentType = response.headers.get("content-type");
+            if (contentType && contentType.indexOf("application/json") !== -1) {
+              return response.json();
+            }
+          }
+          throw new Error("Error in response!");
+        }).then( (result) => {
+           let resultMsg = "Request successful! Result: " + result.result + " - Info: " + result.info;
+            message(resultMsg);
+        }).catch( (error) => { alert("An error occured! " + error); });
+      }
+
+      function installCounter() {
+        let elapsedTime = 0.0;
+        let counter = document.querySelector("#time");
+        counter.innerHTML = elapsedTime;
+        window.setInterval( () => {
+          elapsedTime += 1;
+          let counter = document.querySelector("#time");
+          counter.innerHTML = elapsedTime;
+        }, 1000 );
+      }
+    </script>
+  </body>
+</html>
